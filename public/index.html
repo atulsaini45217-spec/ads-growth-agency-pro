@@ -1,0 +1,418 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>ADS GROWTH AGENCY PRO</title>
+
+<style>
+*{box-sizing:border-box}
+body{margin:0;background:#07111f;color:#fff;font-family:Arial,sans-serif}
+header{padding:20px 5%;display:flex;justify-content:space-between;align-items:center;border-bottom:1px solid #26364d}
+.logo{font-weight:900;font-size:19px}
+.logo span{color:#a3ff58}
+button,.btn{border:0;background:#a3ff58;color:#07111f;padding:12px 18px;border-radius:9px;font-weight:bold;cursor:pointer;text-decoration:none}
+main{max-width:1100px;margin:auto;padding:35px 18px}
+.hero{text-align:center;padding:45px 0}
+.hero h1{font-size:clamp(38px,7vw,65px);margin:15px 0}
+.green{color:#a3ff58}
+.hero p{color:#a9b8ca;line-height:1.7;font-size:17px}
+.grid{display:grid;grid-template-columns:repeat(3,1fr);gap:16px}
+.panel,.plan{background:#101d2e;border:1px solid #26364d;border-radius:16px;padding:22px}
+.section{margin:35px 0}
+.price{font-size:34px;font-weight:bold;color:#a3ff58}
+.muted{color:#a9b8ca;line-height:1.6}
+.field{width:100%;padding:13px;margin:7px 0 14px;background:#081525;border:1px solid #34465f;color:white;border-radius:8px}
+.row{display:flex;gap:10px;flex-wrap:wrap;align-items:center}
+.hidden{display:none!important}
+.tabs{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:20px}
+.tabs button{background:#26364d;color:white}
+.tabs button.active{background:#a3ff58;color:#07111f}
+.notice{padding:12px;background:#17283c;border-radius:9px;margin:12px 0;white-space:pre-wrap;overflow-wrap:anywhere}
+.page-item{padding:14px;border:1px solid #34465f;border-radius:10px;margin:10px 0}
+.small{font-size:12px;color:#a9b8ca}
+.footer{text-align:center;padding:30px;color:#8799af}
+@media(max-width:750px){.grid{grid-template-columns:1fr}header{padding:16px 4%}main{padding:20px 13px}}
+</style>
+</head>
+
+<body>
+
+<header>
+<div class="logo">ADS GROWTH <span>AGENCY PRO</span></div>
+<div class="row">
+<button onclick="showAuth('login')">Login</button>
+<button onclick="showAuth('register')">Sign Up</button>
+</div>
+</header>
+
+<main>
+
+<section class="hero">
+<div class="green">GROW YOUR BUSINESS ONLINE</div>
+<h1>Build. Publish.<br><span class="green">Grow Faster.</span></h1>
+<p>Create landing pages, collect WhatsApp leads and understand your visitors from one dashboard.</p>
+<a href="#plans" class="btn">View Monthly Plans</a>
+</section>
+
+<section class="section">
+<h2>Everything in One Place</h2>
+<div class="grid">
+<div class="panel">
+<h3>Landing Page Builder</h3>
+<p class="muted">Create product pages with headlines, images and WhatsApp buttons.</p>
+</div>
+<div class="panel">
+<h3>Visitor Analytics</h3>
+<p class="muted">View recorded visits, leads and clicks on your pages.</p>
+</div>
+<div class="panel">
+<h3>Meta Pixel Option</h3>
+<p class="muted">Add your Meta Pixel ID to published landing pages.</p>
+</div>
+</div>
+</section>
+
+<section class="section" id="plans">
+<h2>Monthly Plans</h2>
+<p class="muted">USDT payment through TRON TRC20. Each payment activates 30 days.</p>
+<div class="grid" id="plansGrid"></div>
+</section>
+
+<section class="section panel hidden" id="authPanel">
+<h2 id="authTitle">Login</h2>
+<input class="field hidden" id="name" placeholder="Your name">
+<input class="field" id="email" type="email" placeholder="Email address">
+<input class="field" id="password" type="password" placeholder="Password (10+ characters)">
+<div class="row">
+<button onclick="submitAuth()">Continue</button>
+<button onclick="hideAuth()" style="background:#34465f;color:white">Close</button>
+</div>
+<div id="authMsg" class="notice hidden"></div>
+</section>
+
+<section class="section panel hidden" id="dashboard">
+
+<div class="row" style="justify-content:space-between">
+<h2>Customer Dashboard</h2>
+<button onclick="logout()" style="background:#34465f;color:white">Logout</button>
+</div>
+
+<div class="tabs">
+<button class="active" onclick="tab('builder',this)">Page Builder</button>
+<button onclick="tab('payment',this)">Payment</button>
+<button onclick="tab('analytics',this)">Analytics</button>
+<button id="adminButton" class="hidden" onclick="tab('admin',this)">Admin</button>
+</div>
+
+<div id="builderTab">
+<h3>Create Landing Page</h3>
+<input class="field" id="pTitle" placeholder="Page title">
+<input class="field" id="pHeadline" placeholder="Main headline">
+<textarea class="field" id="pDescription" rows="3" placeholder="Description"></textarea>
+<input class="field" id="pImage" placeholder="Product image URL (https://...)">
+<input class="field" id="pWhatsApp" placeholder="WhatsApp number with country code">
+<input class="field" id="pButton" placeholder="Button text" value="Contact on WhatsApp">
+<input class="field" id="pPixel" placeholder="Meta Pixel ID (optional)">
+<button onclick="createPage()">Save Page</button>
+<div id="pagesList"></div>
+</div>
+
+<div id="paymentTab" class="hidden">
+<h3>USDT TRC20 Payment</h3>
+<p class="muted">Send the exact amount for your selected plan. Verify the network and wallet address before sending.</p>
+<div class="notice">
+<b>Network:</b> TRON TRC20<br>
+<b>Wallet:</b><br>
+<span id="walletAddress"></span><br>
+<button onclick="copyWallet()">Copy Address</button>
+</div>
+<div id="paymentPlans"></div>
+<input class="field" id="txid" placeholder="Paste transaction ID (TxID)">
+<button onclick="verifyPayment()">Verify Payment</button>
+<div id="payMsg" class="notice hidden"></div>
+<p class="small">Never share your wallet recovery phrase or private key.</p>
+</div>
+
+<div id="analyticsTab" class="hidden">
+<h3>Your Analytics</h3>
+<button onclick="loadAnalytics()">Refresh Analytics</button>
+<div id="analyticsList"></div>
+</div>
+
+<div id="adminTabContent" class="hidden">
+<h3>Admin Overview</h3>
+<button onclick="loadAdmin()">Refresh</button>
+<div id="adminStats" class="notice"></div>
+</div>
+
+</section>
+</main>
+
+<div class="footer">© 2026 ADS GROWTH AGENCY PRO</div>
+
+<script>
+let token=localStorage.getItem("agp_token");
+let authMode="login";
+let plans={};
+let selectedPlan="basic";
+
+const $=id=>document.getElementById(id);
+
+function showMsg(id,text){
+$(id).textContent=text;
+$(id).classList.remove("hidden");
+}
+
+async function api(url,options={}){
+options.headers={
+...(options.headers||{}),
+...(token?{Authorization:"Bearer "+token}:{})
+};
+
+if(options.body && typeof options.body!=="string"){
+options.headers["Content-Type"]="application/json";
+options.body=JSON.stringify(options.body);
+}
+
+const response=await fetch(url,options);
+const data=await response.json().catch(()=>({}));
+
+if(!response.ok)throw new Error(data.error||"Request failed");
+
+return data;
+}
+
+async function init(){
+try{
+const config=await api("/api/config");
+plans=config.plans;
+$("walletAddress").textContent=config.receiveAddress;
+renderPlans();
+
+if(token){
+const me=await api("/api/me");
+$("dashboard").classList.remove("hidden");
+
+if(me.user.role==="admin"){
+$("adminButton").classList.remove("hidden");
+}
+
+await loadPages();
+}
+}catch(error){
+console.error(error);
+}
+}
+
+function renderPlans(){
+const entries=Object.entries(plans);
+
+$("plansGrid").innerHTML=entries.map(([key,p])=>`
+<div class="plan">
+<h3>${p.name}</h3>
+<div class="price">$${p.price}</div>
+<p class="small">30 Days</p>
+<ul>${p.features.map(f=>`<li>${f}</li>`).join("")}</ul>
+<button onclick="choosePlan('${key}')">Choose Plan</button>
+</div>
+`).join("");
+
+$("paymentPlans").innerHTML=entries.map(([key,p])=>`
+<div class="page-item">
+<b>${p.name}</b> — $${p.price} USDT
+<button onclick="choosePlan('${key}')">Select</button>
+</div>
+`).join("");
+}
+
+function choosePlan(key){
+selectedPlan=key;
+
+if(!token){
+showAuth("login");
+return;
+}
+
+$("dashboard").classList.remove("hidden");
+tab("payment",document.querySelectorAll(".tabs button")[1]);
+$("paymentTab").scrollIntoView({behavior:"smooth"});
+}
+
+function showAuth(mode){
+authMode=mode;
+$("authTitle").textContent=mode==="login"?"Login":"Create Account";
+$("name").classList.toggle("hidden",mode==="login");
+$("authPanel").classList.remove("hidden");
+$("authPanel").scrollIntoView({behavior:"smooth"});
+}
+
+function hideAuth(){
+$("authPanel").classList.add("hidden");
+}
+
+async function submitAuth(){
+try{
+const data=await api("/api/auth/"+authMode,{
+method:"POST",
+body:{
+name:$("name").value,
+email:$("email").value,
+password:$("password").value
+}
+});
+
+token=data.token;
+localStorage.setItem("agp_token",token);
+
+$("dashboard").classList.remove("hidden");
+hideAuth();
+await init();
+
+}catch(error){
+showMsg("authMsg",error.message);
+}
+}
+
+function logout(){
+localStorage.removeItem("agp_token");
+token=null;
+location.reload();
+}
+
+function tab(name,button){
+["builderTab","paymentTab","analyticsTab","adminTabContent"].forEach(id=>{
+$(id).classList.add("hidden");
+});
+
+$(name==="admin"?"adminTabContent":name+"Tab").classList.remove("hidden");
+
+document.querySelectorAll(".tabs button").forEach(b=>b.classList.remove("active"));
+
+if(button)button.classList.add("active");
+}
+
+async function createPage(){
+try{
+await api("/api/pages",{
+method:"POST",
+body:{
+title:$("pTitle").value,
+headline:$("pHeadline").value,
+description:$("pDescription").value,
+imageUrl:$("pImage").value,
+whatsappNumber:$("pWhatsApp").value,
+buttonText:$("pButton").value,
+pixelId:$("pPixel").value
+}
+});
+
+alert("Page saved successfully!");
+await loadPages();
+
+}catch(error){
+alert(error.message);
+}
+}
+
+function escapeHtml(value){
+return String(value||"").replace(/[&<>"']/g,char=>({
+"&":"&amp;",
+"<":"&lt;",
+">":"&gt;",
+'"':"&quot;",
+"'":"&#39;"
+}[char]));
+}
+
+async function loadPages(){
+try{
+const pages=await api("/api/pages");
+
+$("pagesList").innerHTML=pages.map(p=>`
+<div class="page-item">
+<b>${escapeHtml(p.title)}</b><br>
+<span class="small">${escapeHtml(p.slug)} · ${p.published?"Published":"Draft"}</span><br>
+<button onclick="publishPage(${p.id})">Publish</button>
+<a href="/p/${encodeURIComponent(p.slug)}" target="_blank" style="color:#a3ff58">Open Page</a>
+</div>
+`).join("")||"<p class='muted'>No pages created yet.</p>";
+
+}catch(error){
+console.log(error);
+}
+}
+
+async function publishPage(id){
+try{
+const data=await api("/api/pages/"+id+"/publish",{method:"POST"});
+alert("Published: "+location.origin+data.url);
+await loadPages();
+}catch(error){
+alert(error.message);
+}
+}
+
+async function verifyPayment(){
+try{
+showMsg("payMsg","Checking TRON transaction...");
+
+const data=await api("/api/payments/verify",{
+method:"POST",
+body:{
+plan:selectedPlan,
+txid:$("txid").value.trim()
+}
+});
+
+showMsg("payMsg",data.message+" Amount: "+data.amount+" USDT");
+
+}catch(error){
+showMsg("payMsg",error.message);
+}
+}
+
+function copyWallet(){
+navigator.clipboard.writeText($("walletAddress").textContent)
+.then(()=>alert("Wallet address copied"))
+.catch(()=>alert("Please copy the wallet address manually."));
+}
+
+async function loadAnalytics(){
+try{
+const rows=await api("/api/analytics");
+
+$("analyticsList").innerHTML=rows.map(x=>`
+<div class="page-item">
+<b>${escapeHtml(x.title)}</b><br>
+Visits: ${x.visits} · Leads: ${x.leads} · Clicks: ${x.clicks} · Suspicious: ${x.suspicious}
+</div>
+`).join("")||"No analytics yet.";
+
+}catch(error){
+alert(error.message);
+}
+}
+
+async function loadAdmin(){
+try{
+const data=await api("/api/admin/overview");
+
+$("adminStats").textContent=
+"Customers: "+data.users+
+"\nPages: "+data.pages+
+"\nVerified payments: "+data.payments+
+"\nTotal received: "+data.usdt+" USDT"+
+"\nEvents: "+data.events+
+"\nSuspicious events: "+data.suspicious;
+
+}catch(error){
+alert(error.message);
+}
+}
+
+init();
+</script>
+
+</body>
+  </html>
